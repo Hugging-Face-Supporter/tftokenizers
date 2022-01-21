@@ -1,0 +1,56 @@
+[tool.poetry]
+name = "tftokenizers"
+version = "0.1.1"
+description = "Use Huggingface Transformer and Tokenizers as Tensorflow Reusable SavedModels."
+authors = ["MarkusSagen <markus.john.sagen@gmail.com>"]
+license = "Apache License 2.0"
+repository = 'https://github.com/Hugging-Face-Supporter/tftokenizers'
+readme = 'README.md'
+keywords = ['huggingface', 'transformers', 'tokenizers', 'tensorflow', 'text']
+
+[tool.poetry.dependencies]
+python = "^3.8"
+sentencepiece = "^0.1.96"
+tensorflow = "2.5.2"
+tensorflow-hub = "^0.12.0"
+tensorflow-text = "2.5.0"
+tf-sentencepiece = "^0.1.92"
+transformers = "^4.15.0"
+torch = "^1.10.1"
+datasets = "^1.17.0"
+tensorflow-datasets = "^4.4.0"
+python-decouple = "^3.5"
+requests = "2.26.0"
+rich = { extras = ["jupyter"], version = "^10.14.0" }
+wget = "^3.2"
+tomlkit = "0.7.2"
+pydantic = "^1.9.0"
+Sphinx = "4.1.2"
+sphinx-copybutton = "0.4.0"
+sphinx-markdown-tables = "0.0.15"
+sphinx-rtd-theme = "1.0.0"
+sphinxext-opengraph = "0.4.2"
+recommonmark = "^0.7.1"
+myst-parser = "0.15.2"
+readthedocs-sphinx-search = "0.1.1"
+sphinxemoji = "^0.2.0"
+unzip = "^1.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "6.2.5"
+pytest-cov = "3.0.0"
+isort = "5.10.1"
+flake8 = "4.0.1"
+black = "20.8b1"
+mypy = "0.910"
+tox = "3.24.4"
+tomlkit = "0.7.2"
+pylint = "2.9.0"
+autopep8 = "^1.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+# setup = "tftokenizers.poetry.utils:setup"
