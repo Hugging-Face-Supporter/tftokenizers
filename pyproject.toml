@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tftokenizers"
-version = "0.1.2"
+version = "0.1.3"
 description = "Use Huggingface Transformer and Tokenizers as Tensorflow Reusable SavedModels."
 authors = ["MarkusSagen <markus.john.sagen@gmail.com>"]
 license = "Apache License 2.0"
