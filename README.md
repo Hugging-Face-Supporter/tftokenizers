@@ -1,6 +1,7 @@
 # TFtftransformers
 Converting Hugginface tokenizers to Tensorflow tokenizers. The main reason is to be able to bundle the tokenizer and model into one Reusable SavedModel.
 
+<a href="https://badge.fury.io/py/tftokenizers"><img src="https://badge.fury.io/py/tftokenizers.svg" alt="PyPI version" height="18"></a>
 ---
 
 **Source Code**: <a href="https://github.com/Huggingface-Supporters/tftftransformers" target="_blank">https://github.com/Hugging-Face-Supporter/tftokenizers</a>
@@ -55,7 +56,7 @@ output = reloaded_model([s1, s2, s3])
 print(output)
 ```
 
-### `Setup`
+## `Setup`
 ```bash
 git clone https://github.com/Hugging-Face-Supporter/tftokenizers.git
 cd tftokenizers
@@ -63,13 +64,13 @@ poetry install
 poetry shell
 ```
 
-### `Run`
+## `Run`
 To convert a Huggingface tokenizer to Tensorflow, first choose one from the models or tokenizers from the Huggingface hub to download.
 
 **NOTE**
 > Currently only BERT models work with the converter.
 
-#### `Download`
+### `Download`
 First download tokenizers from the hub by name. Either run the bash script do download multiple tokenizers or download a single tokenizer with the python script.
 
 The idea is to eventually only to automatically download and convert
@@ -79,13 +80,13 @@ python tftokenizers/download.py -n bert-base-uncased
 bash scripts/download_tokenizers.sh
 ```
 
-#### `Convert`
+### `Convert`
 Convert downloaded tokenizer from Huggingface format to Tensorflow
 ```bash
 python tftokenizers/convert.py
 ```
 
-### `Before Commit`
+## `Before Commit`
 ```bash
 make build
 ```
@@ -97,8 +98,8 @@ make build
 - [x] Make a TF Reusabel SavedModel with Tokenizer and Model in the same class. Emulate how the TF Hub example for BERT works.
 - [x] Find methods for identifying the base tokenizer model and map those settings and special tokens to new tokenizers
 - [x] Extend the tokenizers to more tokenizer types and identify them from a huggingface model name
-- [ ] Document how others can use the library and document the different stages in the process
+- [x] Document how others can use the library and document the different stages in the process
+- [x] Improve the conversion pipeline (s.a. Download and export files if not passed in or available locally)
 - [ ] Convert other tokenizers. Identify limitations
-- [ ] Improve the conversion pipeline (s.a. Download and export files if not passed in or available locally)
 - [ ] Support encoding of two sentences at a time [Ref](https://www.tensorflow.org/text/guide/bert_preprocessing_guide)
 - [ ] Allow the tokenizers to be used for Masking (MLM) [Ref](https://www.tensorflow.org/text/guide/bert_preprocessing_guide)
