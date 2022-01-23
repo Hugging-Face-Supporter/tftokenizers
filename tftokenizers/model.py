@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, TFAutoModel
 from transformers.utils.logging import set_verbosity_error
 
 from tftokenizers.file import get_filename_from_path, get_vocab_from_path, load_json
-from tftokenizers.tokenizer import TFTokenizerBase
+from tftokenizers.tokenizer import TFAutoTokenizer, TFTokenizerBase
 from tftokenizers.types import PaddingStrategies
 
 set_verbosity_error()
@@ -24,12 +24,10 @@ class TFModel(keras.layers.Layer):
     def call(
         self,
         inputs,
-        max_length=512,
-        padding: Optional[PaddingStrategies] = None,
         verbose=False,
         training=True,
     ):
-        tokens = self.tokenizer.tokenize(inputs, max_length=max_length, padding=padding)
+        tokens = self.tokenizer.tokenize(inputs=inputs)
         if verbose:
             print(tokens)
 
@@ -66,13 +64,12 @@ if __name__ == "__main__":
         hf_spec=tokenizer_spec,
         config=config,
     )
+    custom_tokenizer = TFAutoTokenizer.from_pretrained("bert-base-uncased")
 
     # Building our custom TF model pipeline
     custom_model = TFModel(model, custom_tokenizer)
     output = custom_model(
         [s1, s2, s3],
-        max_length=max_length,
-        padding=PaddingStrategies.MAX_LENGTH,
     )
 
     # Compare against the Huggingface implementation

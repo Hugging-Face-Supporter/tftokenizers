@@ -15,16 +15,15 @@ This is an example of how one can use Huggingface model and tokenizers bundled t
 
 ```python
 import tensorflow as tf
-from tftokenizer import TFModel
-from tftokenizers import TFAutoTokenizer
 from transformers import TFAutoModel
+from tftokenizers import TFModel, TFAutoTokenizer
 
 # Load base models from Huggingface
 model_name = "bert-base-cased"
 model = TFAutoModel.from_pretrained(model_name)
 
 # Load converted TF tokenizer
-tokenizer = TFAutoTokenizer(model_name)
+tokenizer = TFAutoTokenizer.from_pretrained(model_name)
 
 # Create a TF Reusable SavedModel
 custom_model = TFModel(model=model, tokenizer=tokenizer)
@@ -38,13 +37,10 @@ s3 = "Hello, world!"
 output = custom_model(tf_string)
 output = custom_model([s1, s2, s3])
 
-# You can also pass arguments, similar to Huggingface tokenizers
+# We can now pass input as tensors
 output = custom_model(
-    [s1, s2, s3],
-    max_length=512,
-    padding="max_length",
+    inputs=tf.constant([s1, s2, s3], dtype=tf.string, name="inputs"),
 )
-print(output)
 
 # Save tokenizer
 saved_name = "reusable_bert_tf"

@@ -48,8 +48,6 @@ def test_huggingface_model_with_custom_and_their_tokenizer(hf_tokenizer, model):
     custom_model = TFModel(model=model, tokenizer=custom_tokenizer)
     tf_output = custom_model(
         [s1, s2, s3],
-        padding=PaddingStrategies.MAX_LENGTH,
-        max_length=max_length,
         training=False,
     )
     print(tf_output)  # with `shape=(3, 512, 768)`

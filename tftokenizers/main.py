@@ -26,7 +26,5 @@ if __name__ == "__main__":
     # You can also pass arguments, similar how they are named from Huggingface
     output = custom_model(
         [s1, s2, s3],
-        max_length=512,
-        padding="max_length",
     )
     print(output)
