@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple
 
 import tensorflow as tf
 
-from tftokenizers.types import TemplateType
+from tftokenizers.types import PaddingStrategies, TemplateType
 
 
 def map_special_tokens_to_ids(
@@ -50,3 +50,20 @@ def to_tensor(x: int) -> tf.Tensor:
 
 def list_to_tensor(lst: List[int]):
     return [to_tensor(num) for num in lst]
+
+
+def set_valid_max_seq_length(
+    desired=None, model_max_length=512, num_max_tokens_in_seq=510
+) -> int:
+    """Calculate and set the maximum allowed sequence length."""
+    min_length = model_max_length - num_max_tokens_in_seq
+    max_length = num_max_tokens_in_seq
+
+    if desired is None or desired > max_length or desired <= min_length:
+        desired = max_length
+    return desired
+
+
+def set_valid_padding(padding: PaddingStrategies) -> PaddingStrategies:
+    padding = padding if padding is not None else PaddingStrategies.LONGEST
+    return padding

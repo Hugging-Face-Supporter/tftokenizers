@@ -18,6 +18,8 @@ from tftokenizers.utils import (
     list_to_tensor,
     map_special_tokens_to_ids,
     num_special_tokens,
+    set_valid_max_seq_length,
+    set_valid_padding,
 )
 
 
@@ -101,7 +103,7 @@ class TFAutoTokenizer(tf.Module):
 
         # Include a tokenize signature for a batch of strings.
         self.tokenize.get_concrete_function(
-            tf.TensorSpec(shape=[None], dtype=tf.string)
+            inputs=tf.TensorSpec(shape=[None], dtype=tf.string),
         )
 
         # Include `detokenize` and `lookup` signatures for:
@@ -126,16 +128,27 @@ class TFAutoTokenizer(tf.Module):
         self.get_vocab_path.get_concrete_function()
         self.get_reserved_tokens.get_concrete_function()
 
+    @classmethod
+    def from_pretrained(cls, model_name_or_path, *model_args, **kwargs):
+        """Load tokenizer in same expected behaviour as Huggingface tokenizers."""
+        tokenizer = cls(model_name_or_path, *model_args, **kwargs)
+        return tokenizer
+
     @tf.function
     def tokenize(
-        self, strings, max_length=None, padding: Optional[PaddingStrategies] = None
+        self, inputs, max_length=None, padding: Optional[PaddingStrategies] = None
     ):
-        input_ids = self.tokenizer.tokenize(strings)
+        self.max_length = set_valid_max_seq_length(
+            max_length, self.model_max_length, self.max_len_single_sentence
+        )
+        self.padding = set_valid_padding(padding)
+
+        input_ids = self.tokenizer.tokenize(inputs)
         # Merge the `word` and `word-piece` axes.
         input_ids = input_ids.merge_dims(-2, -1)
         input_ids = self.truncate(input_ids)
         input_ids = self.post_process(input_ids)
-        input_ids, mask = self.pad(input_ids, max_length=max_length, padding=padding)
+        input_ids, mask = self.pad(input_ids)
         return {"input_ids": input_ids, "attention_mask": mask}
 
     def truncate(self, sequence: tf.RaggedTensor):
@@ -145,35 +158,24 @@ class TFAutoTokenizer(tf.Module):
             will also be included in the sentence.
         """
         max_length = self.max_length
-        return sequence[:, : max_length - self.max_len_single_sentence]
+        return sequence[:, :max_length]
 
     def pad(
         self,
         sequence: tf.RaggedTensor,
-        max_length: int = None,
-        padding: Optional[PaddingStrategies] = None,
     ) -> Tuple[tf.RaggedTensor, tf.RaggedTensor]:
         r"""
         Add padding of a sequence and supports different strategies for doing so.
+
+        ::note: passing in padding will have no effect when loading a saved tokenizer.
 
         `strategy` supports different options:
             - `max_length`: Pad all batches to tokenizer `max_seq_length`.
             - `longest`: Pad all to same length as the longest sequence in the batch.
             - `none`: Do not pad at all.
         """
-        if padding is None:
-            padding = (
-                self.padding if self.padding is not None else PaddingStrategies.LONGEST
-            )
-
-        if max_length is None:
-            max_length = (
-                self.max_length
-                if self.max_length is not None
-                else self.model_max_length
-            )
-
-        assert max_length > 2 and max_length <= self.model_max_length
+        padding = self.padding
+        max_length = self.max_length
 
         if padding == PaddingStrategies.MAX_LENGTH:
             input_ids, attention_mask = text.pad_model_inputs(
@@ -291,6 +293,27 @@ class TFAutoTokenizer(tf.Module):
     def get_reserved_tokens(self):
         return tf.constant(self._reserved_tokens)
 
+    @tf.function
+    def _set_valid_max_seq_length(
+        self, desired=None, model_max_length=512, num_max_tokens_in_seq=510
+    ) -> int:
+        """Calculate and set the maximum allowed sequence length."""
+        min_length = model_max_length - num_max_tokens_in_seq
+        max_length = num_max_tokens_in_seq
+
+        if desired is None or desired > max_length or desired <= min_length:
+            desired = max_length
+        return desired
+
+    @tf.function
+    def _set_valid_padding(self, padding: PaddingStrategies) -> PaddingStrategies:
+        padding = padding if padding is not None else PaddingStrategies.LONGEST
+        return padding
+
+    @tf.function
+    def get_max_length(self):
+        return self.max_length
+
     # New methods with names similar to
     # The Huggingface Tokenizer interface
     @tf.function
@@ -392,8 +415,8 @@ class TFTokenizerBase(tf.Module):
         Special tokens marking the start and end of a sequence (if specified) \
             will also be included in the sentence.
         """
-        max_length = self.max_length
-        return sequence[:, : max_length - self.num_special_single]
+        max_length = self.max_length  # TODO: update
+        return sequence[:, :max_length]
 
     def pad(
         self,
@@ -420,8 +443,6 @@ class TFTokenizerBase(tf.Module):
                 if self.max_length is not None
                 else self.model_max_length
             )
-
-        assert max_length > 2 and max_length <= self.model_max_length
 
         if padding == PaddingStrategies.MAX_LENGTH:
             input_ids, attention_mask = text.pad_model_inputs(
@@ -515,6 +536,10 @@ class TFTokenizerBase(tf.Module):
         # Join them into strings.
         result = tf.strings.reduce_join(result, separator=" ", axis=-1)
         return result
+
+    @tf.function
+    def get_max_length(self):
+        return self.max_length
 
     @tf.function
     def detokenize(self, tokenized):

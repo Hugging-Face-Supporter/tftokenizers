@@ -1,8 +1,9 @@
 import tensorflow as tf
 import tensorflow_text as text
+from transformers import AutoTokenizer
 
 from tftokenizers.file import get_filename_from_path, get_vocab_from_path, load_json
-from tftokenizers.tokenizer import TFTokenizerBase
+from tftokenizers.tokenizer import TFAutoTokenizer, TFTokenizerBase
 from tftokenizers.types import PaddingStrategies
 
 tf.get_logger().setLevel("ERROR")
@@ -31,9 +32,12 @@ if __name__ == "__main__":
         hf_spec=tokenizer_spec,
         config=config,
     )
+    hf_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+    # tokenizer = TFAutoTokenizer("bert-base-uncased")
+    tokenizer = TFAutoTokenizer.from_pretrained("bert-base-uncased")
 
     # # Save tokenizer
-    model_name = "exported_custom_bert_tokenizer"
+    model_name = "exported_custom_bert_tokenizer_auto"
     tf.saved_model.save(tokenizer, model_name)
 
     # # Load tokenizer
@@ -42,9 +46,22 @@ if __name__ == "__main__":
     tokens = tokenizer.tokenize(
         [s1, s2, s3],
         padding=PaddingStrategies.LONGEST,
-        max_length=512,
+        max_length=10,
     )["input_ids"]
     print("Token IDs:\n", tokens.numpy())
 
+    tokens = hf_tokenizer.batch_encode_plus(
+        [s1, s2, s3],
+        padding=PaddingStrategies.LONGEST.value,
+        max_length=10,
+    )
+    print("hf tokens\n", tokens)
+
     tokens = reloaded_tokenizer.tokenize([s1, s2, s3])["input_ids"]
+    print("Token IDs:\n", tokens.numpy())
+    print("")
+
+    tokens = reloaded_tokenizer.tokenize(
+        inputs=tf.constant([s1, s2, s3], dtype=tf.string, name="inputs"),
+    )["input_ids"]
     print("Token IDs:\n", tokens.numpy())
