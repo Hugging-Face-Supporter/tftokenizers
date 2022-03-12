@@ -18,11 +18,13 @@ def load_tokenizer(tokenizer_tf_base, tokenizer_config_params, **kwargs):
     pass
 
 
-def detect_and_load_tokenizer(config: PreTrainedTokenizer, path: str):
-    # TODO: Move to detect.py
-    """Load the corresponging base tokenizer from Huggingaface and map it to a Tensorflow model."""
+def detect_and_load_tokenizer(tokenizer: PreTrainedTokenizer, path: str, **kwargs):
+    # TODO: Should load tokenizer based on `tokenizer.backend_tokenizer.model`
+    """Load the corresponging base tokenizer from Huggingaface and map it to a Tensorflow model.
 
-    vocab_file = config.vocab_files_names["vocab_file"]
+    We set lower_case=False, since we want the tokenizer vocabulary to be similarly cased to Huggingface
+    """
+    vocab_file = tokenizer.vocab_files_names["vocab_file"]
     vocab_path = f"{path}/{vocab_file}"
 
     """
@@ -42,5 +44,6 @@ def detect_and_load_tokenizer(config: PreTrainedTokenizer, path: str):
     return text.BertTokenizer(
         vocab_path,
         token_out_type=tf.int64,
-        lower_case=True,
+        lower_case=tokenizer.do_lower_case,
+        **kwargs,
     )

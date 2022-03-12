@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 import tensorflow as tf
 import tensorflow_text as text
@@ -9,6 +9,8 @@ from tftokenizers.detect import detect_and_load_tokenizer
 from tftokenizers.file import get_vocab_from_path, load_json
 from tftokenizers.types import (
     PROCESSING_STEP,
+    TF_TENSORS,
+    TF_TOKENIZER_INPUT,
     NotValidPaddingStrategy,
     PaddingStrategies,
     SpecialTokens,
@@ -21,6 +23,24 @@ from tftokenizers.utils import (
     set_valid_max_seq_length,
     set_valid_padding,
 )
+
+
+def compare_tokenizers(pretrained_model_name: str, inputs: Union[str, List[str]]):
+    """Helper function for comparing TF and HF tokenizers."""
+
+    tf_tokenizer = TFAutoTokenizer.from_pretrained(pretrained_model_name)
+    hf_tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name)
+
+    tf_tokens = tf_tokenizer.batch_encode_plus(inputs)
+    hf_tokens = hf_tokenizer.batch_encode_plus(
+        inputs,
+        padding=True,
+        truncation=True,
+        return_token_type_ids=False,
+        return_tensors="tf",
+    )
+
+    return {"tf_tokens": tf_tokens, "hf_tokens": hf_tokens}
 
 
 def save_and_load_tokenizer_to_path(
@@ -74,9 +94,16 @@ class TFAutoTokenizer(tf.Module):
         self.all_special_tokens = config.all_special_tokens
         self.all_special_ids = config.all_special_ids
         self.all_special_ids_tf = list_to_tensor(config.all_special_ids)
-        self.max_len_sentences_pair = config.max_len_sentences_pair
-        self.max_len_single_sentence = config.max_len_single_sentence
-        self.model_max_length = config.model_max_length
+
+        # TODO: Should be determined by the tokenizer config
+        # POtential solution could be:
+        # $ c = tokenizer.backend_tokenizer.post_processor
+        # $ sentences_pair  = model_max_length - c.num_special_tokens_to_add(is_pair=False)
+        # $ single_sentence = model_max_length - c.num_special_tokens_to_add(is_pair=True)
+        self.max_len_sentences_pair = 509
+        self.max_len_single_sentence = 510
+        self.model_max_length = max_length if max_length is not None else 510
+
         self.model_input_names = config.model_input_names
         self.name_or_path = config.name_or_path
         self.saved_at_path = path
@@ -95,9 +122,10 @@ class TFAutoTokenizer(tf.Module):
         self.pre_tokenizer = pipeline["pre_tokenizer"]["type"]
 
         self.padding = padding if padding is not None else PaddingStrategies.LONGEST
-        self.max_length = (
-            max_length if max_length is not None else self.model_max_length
-        )
+        # self.max_length = (
+        #    max_length if max_length is not None else self.model_max_length
+        # )
+        self.max_length = 512
         self._reserved_tokens = list(self.special_tokens.keys())
         self._vocab_path = tf.saved_model.Asset(self.vocab_path)
 
@@ -163,7 +191,7 @@ class TFAutoTokenizer(tf.Module):
     def pad(
         self,
         sequence: tf.RaggedTensor,
-    ) -> Tuple[tf.RaggedTensor, tf.RaggedTensor]:
+    ) -> TF_TOKENIZER_INPUT:
         r"""
         Add padding of a sequence and supports different strategies for doing so.
 
@@ -176,26 +204,27 @@ class TFAutoTokenizer(tf.Module):
         """
         padding = self.padding
         max_length = self.max_length
+        _input_ids, _attention_mask = TF_TENSORS, TF_TENSORS  # type: ignore
 
         if padding == PaddingStrategies.MAX_LENGTH:
-            input_ids, attention_mask = text.pad_model_inputs(
+            _input_ids, _attention_mask = text.pad_model_inputs(
                 input=sequence, max_seq_length=max_length
             )
         elif padding == PaddingStrategies.LONGEST:
             seq_len_per_batch: tf.Tensor = sequence.nested_row_lengths()[0]
             longest_seq_in_batch = tf.reduce_max(seq_len_per_batch)
-            input_ids, attention_mask = text.pad_model_inputs(
+            _input_ids, _attention_mask = text.pad_model_inputs(
                 input=sequence, max_seq_length=longest_seq_in_batch
             )
         elif padding == PaddingStrategies.NONE:
-            input_ids: tf.RaggedTensor = sequence
-            attention_mask: tf.RaggedTensor = tf.ones_like(sequence)
+            _input_ids: tf.RaggedTensor = sequence
+            _attention_mask: tf.RaggedTensor = tf.ones_like(sequence)
         else:
             raise NotValidPaddingStrategy(padding=padding)
 
         # Since Huggingface tensors are of same type
-        input_ids = tf.cast(input_ids, dtype=tf.int32)
-        attention_mask = tf.cast(attention_mask, dtype=tf.int32)
+        input_ids = tf.cast(_input_ids, dtype=tf.int64)
+        attention_mask = tf.cast(_attention_mask, dtype=tf.int64)
         return input_ids, attention_mask
 
     @tf.function
@@ -338,6 +367,8 @@ class TFAutoTokenizer(tf.Module):
 
 
 class TFTokenizerBase(tf.Module):
+    # TODO: Will move to deprecate this class
+    # Was based on taking in a tokenizer to start
     def __init__(
         self,
         vocab_path: str,
@@ -355,7 +386,7 @@ class TFTokenizerBase(tf.Module):
         self.vocab_size = len(vocab)
         self.vocab = tf.Variable(vocab)
 
-        self.model_max_length = config["model_max_length"]
+        self.model_max_length = 510  # config["model_max_length"]
         self.max_length = (
             max_length if max_length is not None else self.model_max_length
         )
@@ -423,7 +454,7 @@ class TFTokenizerBase(tf.Module):
         sequence: tf.RaggedTensor,
         max_length: int = None,
         padding: Optional[PaddingStrategies] = None,
-    ) -> Tuple[tf.RaggedTensor, tf.RaggedTensor]:
+    ) -> TF_TOKENIZER_INPUT:
         r"""
         Add padding of a sequence and supports different strategies for doing so.
 
@@ -432,6 +463,8 @@ class TFTokenizerBase(tf.Module):
             - `longest`: Pad all to same length as the longest sequence in the batch.
             - `none`: Do not pad at all.
         """
+        _input_ids, _attention_mask = TF_TENSORS, TF_TENSORS  # type: ignore
+
         if padding is None:
             padding = (
                 self.padding if self.padding is not None else PaddingStrategies.LONGEST
@@ -445,24 +478,24 @@ class TFTokenizerBase(tf.Module):
             )
 
         if padding == PaddingStrategies.MAX_LENGTH:
-            input_ids, attention_mask = text.pad_model_inputs(
+            _input_ids, _attention_mask = text.pad_model_inputs(
                 input=sequence, max_seq_length=max_length
             )
         elif padding == PaddingStrategies.LONGEST:
             seq_len_per_batch: tf.Tensor = sequence.nested_row_lengths()[0]
             longest_seq_in_batch = tf.reduce_max(seq_len_per_batch)
-            input_ids, attention_mask = text.pad_model_inputs(
+            _input_ids, _attention_mask = text.pad_model_inputs(
                 input=sequence, max_seq_length=longest_seq_in_batch
             )
         elif padding == PaddingStrategies.NONE:
-            input_ids: tf.RaggedTensor = sequence
-            attention_mask: tf.RaggedTensor = tf.ones_like(sequence)
+            _input_ids: tf.RaggedTensor = sequence
+            _attention_mask: tf.RaggedTensor = tf.ones_like(sequence)
         else:
             raise NotValidPaddingStrategy(padding=padding)
 
         # Since Huggingface tensors are of same type
-        input_ids = tf.cast(input_ids, dtype=tf.int32)
-        attention_mask = tf.cast(attention_mask, dtype=tf.int32)
+        input_ids = tf.cast(_input_ids, dtype=tf.int64)
+        attention_mask = tf.cast(_attention_mask, dtype=tf.int64)
         return input_ids, attention_mask
 
     @tf.function
@@ -470,8 +503,8 @@ class TFTokenizerBase(tf.Module):
         r"""
         Specifies how a sentence should be constructed together with a set of special tokens.
 
-        Huggingface tokenizers specify a template for how different post_processors should behave \
-            when adding special tokens to a "single" or "pair" of sentences.
+        Huggingface tokenizers specify a template for how different post_processors should \
+            behave when adding special tokens to a "single" or "pair" of sentences.
 
         An example template parsing instruction for BERT could look like:
 
