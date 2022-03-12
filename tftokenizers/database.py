@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+from typing import Dict, List
 
 from tftokenizers.file import save_json
 from tftokenizers.types import TokenizerAttributes
@@ -12,7 +13,8 @@ EXECUTE_PERMISSION = 0o0755
 
 
 def create_database(database_path=DATABASE_PATH) -> None:
-    database = {TOKENIZER_ENTRY: []}
+    """Save the files of a Huggingface tokenizer locally."""
+    database: Dict[str, List[str]] = {TOKENIZER_ENTRY: []}
     with open(database_path, "w+", encoding="utf-8") as f:
         save_json(database, f)
 

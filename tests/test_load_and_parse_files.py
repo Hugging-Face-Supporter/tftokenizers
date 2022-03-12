@@ -1,4 +1,4 @@
-from tftokenizers.file import get_filename_from_path, get_vocab_from_path
+from tftokenizers.file import get_filename_and_type_from_path, get_vocab_from_path
 
 
 def test_get_file_from_path():
@@ -7,40 +7,14 @@ def test_get_file_from_path():
     path_json = "saved_tokenizers/allenai_longformer-base-4096"
 
     # Find vocab file when as txt
-    file_path, FILETYPE = get_filename_from_path(
-        path_txt, filename, return_file_type=True
-    )
+    file_path, FILETYPE = get_filename_and_type_from_path(path_txt, filename)
     assert file_path == f"{path_txt}/{filename}.txt"
     assert FILETYPE == "txt"
 
     # Find vocab file when as json
-    file_path, FILETYPE = get_filename_from_path(
-        path_json, filename, return_file_type=True
-    )
+    file_path, FILETYPE = get_filename_and_type_from_path(path_json, filename)
     assert file_path == f"{path_json}/{filename}.json"
     assert FILETYPE == "json"
-
-
-def test_get_file_from_path_when_path_includes_filename():
-    filename = "vocab"
-    path = "saved_tokenizers/bert-base-uncased"
-    path_includes_filename = "saved_tokenizers/bert-base-uncased/vocab"
-    path_includes_filename_and_extention = (
-        "saved_tokenizers/bert-base-uncased/vocab.txt"
-    )
-
-    file_path, filetype = get_filename_from_path(path, filename, return_file_type=True)
-    assert file_path == f"{path}/{filename}.txt"
-    assert filetype == "txt"
-    assert file_path == path_includes_filename_and_extention
-
-    file_path_with_filename = get_filename_from_path(path_includes_filename, filename)
-    assert file_path_with_filename == path_includes_filename_and_extention
-
-    file_path_with_filename = get_filename_from_path(
-        path_includes_filename_and_extention, filename
-    )
-    assert file_path_with_filename == path_includes_filename_and_extention
 
 
 def test_get_vocab_from_file_txt():
