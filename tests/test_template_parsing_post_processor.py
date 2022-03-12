@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+
 from tftokenizers.file import get_vocab_from_path, load_json
 from tftokenizers.types import PROCESSING_STEP, TemplateType
 from tftokenizers.utils import map_special_tokens_to_ids
