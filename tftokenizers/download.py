@@ -4,7 +4,8 @@ import logging
 from rich.logging import RichHandler
 from transformers import AutoTokenizer
 
-from tftokenizers.database import create_download_script, save_tokenizer_attributes
+from tftokenizers.database import (create_download_script,
+                                   save_tokenizer_attributes)
 from tftokenizers.types import TokenizerAttributes
 from tftokenizers.utils import parse_args_to_keywords
 
@@ -59,9 +60,7 @@ def main():
         export_path=path,
     )
     save_tokenizer_attributes(attributes)
-
     log.info("Saving a download script")
-    create_download_script()
 
 
 if __name__ == "__main__":

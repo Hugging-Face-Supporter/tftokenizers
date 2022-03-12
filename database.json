@@ -1,190 +1,44 @@
 {
     "tokenizers": [
         {
-            "name_or_path": "google/t5-v1_1-base",
-            "export_path": "saved_tokenizers/google_t5-v1_1-base",
-            "base_model": null,
-            "is_encoder": null,
-            "is_decoder": null,
-            "is_fast": null,
-            "max_length": 0
-        },
-        {
-            "name_or_path": "albert-base-v2",
-            "export_path": "saved_tokenizers/albert-base-v2",
-            "base_model": null,
-            "is_encoder": null,
-            "is_decoder": null,
-            "is_fast": null,
-            "max_length": 0
-        },
-        {
-            "name_or_path": "xlm-roberta-base",
-            "export_path": "saved_tokenizers/xlm-roberta-base",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "xlnet-base-cased",
-            "export_path": "saved_tokenizers/xlnet-base-cased",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "transfo-xl-wt103",
-            "export_path": "saved_tokenizers/transfo-xl-wt103",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "microsoft/prophetnet-large-uncased",
-            "export_path": "saved_tokenizers/microsoft_prophetnet-large-uncased",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "allenai/longformer-base-4096",
-            "export_path": "saved_tokenizers/allenai_longformer-base-4096",
-            "base_model": null,
-            "is_encoder": null,
-            "is_decoder": null,
-            "is_fast": null,
-            "max_length": 0
-        },
-        {
-            "name_or_path": "microsoft/deberta-v2-xlarge",
-            "export_path": "saved_tokenizers/microsoft_deberta-v2-xlarge",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "ctrl",
-            "export_path": "saved_tokenizers/ctrl",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "google/byt5-small",
-            "export_path": "saved_tokenizers/google_byt5-small",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "t5-base",
-            "export_path": "./saved_tokenizers/t5-base",
-            "base_tokenizer": null
-        },
-        {
             "name_or_path": "bert-base-uncased",
-            "export_path": "saved_tokenizers/bert-base-uncased",
-            "base_model": null,
-            "is_encoder": null,
-            "is_decoder": null,
-            "is_fast": null,
-            "max_length": 0
-        },
-        {
-            "name_or_path": "roberta-base",
-            "export_path": "saved_tokenizers/roberta-base",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "google/electra-small-discriminator",
-            "export_path": "saved_tokenizers/google_electra-small-discriminator",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "Helsinki-NLP/opus-mt-en-roa",
-            "export_path": "saved_tokenizers/Helsinki-NLP_opus-mt-en-roa",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "facebook/m2m100_418M",
-            "export_path": "saved_tokenizers/facebook_m2m100_418M",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "google/mt5-base",
-            "export_path": "saved_tokenizers/google_mt5-base",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "openai-gpt",
-            "export_path": "saved_tokenizers/openai-gpt",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "gpt2",
-            "export_path": "saved_tokenizers/gpt2",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "EleutherAI/gpt-neo-1.3B",
-            "export_path": "saved_tokenizers/EleutherAI_gpt-neo-1.3B",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "google/pegasus-xsum",
-            "export_path": "saved_tokenizers/google_pegasus-xsum",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "google/reformer-crime-and-punishment",
-            "export_path": "saved_tokenizers/google_reformer-crime-and-punishment",
-            "base_tokenizer": null
+            "export_path": "saved_tokenizers/bert-base-uncased"
         },
         {
             "name_or_path": "bert-base-cased",
-            "export_path": "saved_tokenizers/bert-base-cased",
-            "base_tokenizer": null
+            "export_path": "saved_tokenizers/bert-base-cased"
         },
         {
             "name_or_path": "bert-base-multilingual-cased",
-            "export_path": "saved_tokenizers/bert-base-multilingual-cased",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "xlm-mlm-xnli15-1024",
-            "export_path": "saved_tokenizers/xlm-mlm-xnli15-1024",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "xlm-mlm-tlm-xnli15-1024",
-            "export_path": "saved_tokenizers/xlm-mlm-tlm-xnli15-1024",
-            "base_tokenizer": null
+            "export_path": "saved_tokenizers/bert-base-multilingual-cased"
         },
         {
             "name_or_path": "bert-base-multilingual-uncased",
-            "export_path": "saved_tokenizers/bert-base-multilingual-uncased",
-            "base_tokenizer": null
+            "export_path": "saved_tokenizers/bert-base-multilingual-uncased"
         },
         {
-            "name_or_path": "sentence-transformers/all-MiniLM-L6-v2",
-            "export_path": "saved_tokenizers/sentence-transformers_all-MiniLM-L6-v2",
-            "base_tokenizer": null
+            "name_or_path": "albert-base-v2",
+            "export_path": "saved_tokenizers/albert-base-v2"
         },
         {
-            "name_or_path": "sentence-transformers/paraphrase-distilroberta-base-v2",
-            "export_path": "saved_tokenizers/sentence-transformers_paraphrase-distilroberta-base-v2",
-            "base_tokenizer": null
+            "name_or_path": "bert-base-chinese",
+            "export_path": "saved_tokenizers/bert-base-chinese"
         },
         {
-            "name_or_path": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-            "export_path": "saved_tokenizers/sentence-transformers_paraphrase-multilingual-MiniLM-L12-v2",
-            "base_tokenizer": null
+            "name_or_path": "distilbert-base-cased",
+            "export_path": "saved_tokenizers/distilbert-base-cased"
         },
         {
-            "name_or_path": "sentence-transformers/all-mpnet-base-v2",
-            "export_path": "saved_tokenizers/sentence-transformers_all-mpnet-base-v2",
-            "base_tokenizer": null
+            "name_or_path": "distilbert-base-multilingual-cased",
+            "export_path": "saved_tokenizers/distilbert-base-multilingual-cased"
         },
         {
-            "name_or_path": "allenai/led-base-16384",
-            "export_path": "saved_tokenizers/allenai_led-base-16384",
-            "base_tokenizer": null
+            "name_or_path": "KB/bert-base-swedish-cased",
+            "export_path": "saved_tokenizers/KB_bert-base-swedish-cased"
         },
         {
-            "name_or_path": "allenai/scibert_scivocab_uncased",
-            "export_path": "saved_tokenizers/allenai_scibert_scivocab_uncased",
-            "base_tokenizer": null
-        },
-        {
-            "name_or_path": "allenai/unifiedqa-t5-base",
-            "export_path": "saved_tokenizers/allenai_unifiedqa-t5-base",
-            "base_tokenizer": null
+            "name_or_path": "allenai/longformer-base-4096",
+            "export_path": "saved_tokenizers/allenai_longformer-base-4096"
         }
     ]
 }
