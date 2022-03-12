@@ -1,5 +1,4 @@
-from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import tensorflow as tf
 
@@ -15,9 +14,10 @@ def map_special_tokens_to_ids(
     for name, symbol in special_tokens_or_config.items():
         if "_token" not in name or "_tokens" in name:
             continue
-        _token_id = vocab.index(symbol)
-        token_id: tf.Tensor = to_tensor(_token_id)
-        special_tokens_map[symbol] = token_id
+        if isinstance(symbol, str):
+            _token_id = vocab.index(symbol)
+            token_id: tf.Tensor = to_tensor(_token_id)
+            special_tokens_map[symbol] = token_id
 
     return special_tokens_map
 
@@ -64,6 +64,6 @@ def set_valid_max_seq_length(
     return desired
 
 
-def set_valid_padding(padding: PaddingStrategies) -> PaddingStrategies:
+def set_valid_padding(padding: Optional[PaddingStrategies]) -> PaddingStrategies:
     padding = padding if padding is not None else PaddingStrategies.LONGEST
     return padding

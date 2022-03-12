@@ -1,10 +1,13 @@
 from enum import Enum
-from typing import Any, Dict, Union
+from typing import Any, Dict, Tuple, Union
 
+import tensorflow as tf
 from pydantic import BaseModel
 
 SPECIAL_TOKENS_DICT = Dict[str, Dict[str, Union[str, int, Any]]]
 PROCESSING_STEP = Dict[str, Dict[str, str]]
+TF_TENSORS = Union[tf.RaggedTensor, tf.SparseTensor, tf.IndexedSlices, tf.Tensor, Any]
+TF_TOKENIZER_INPUT = Tuple[TF_TENSORS, TF_TENSORS]
 
 
 class PaddingStrategies(str, Enum):
@@ -49,7 +52,8 @@ class NotValidPaddingStrategy(Exception):
     def __init__(
         self,
         padding,
-        message="The padding strategy chosen is not supported. Use one listed in the class `PaddingStrategies`.",
+        message="The padding strategy chosen is not supported. \
+            Use one listed in the class `PaddingStrategies`.",
     ):
         self.strategy = padding
         self.message = message

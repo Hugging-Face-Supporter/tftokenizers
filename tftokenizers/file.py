@@ -12,11 +12,26 @@ class FileTypes(str, Enum):
     NONE = "None"
 
 
-def get_filename_from_path(
-    path: str, filename: str, return_file_type=False
-) -> Tuple[str, str]:
+def get_filename_from_path(path: str, filename: str) -> str:
     """Find a file name prefix in a folder."""
-    file_type = FileTypes.NONE
+    if filename in path:
+        path_without_filename = "/".join(path.split("/")[:-1])
+        path = path_without_filename
+
+    for file_path in glob.glob(f"{path}/*"):
+        file = file_path.split("/")[-1]
+
+        if filename in file and filename not in path:
+            filename = file
+            break
+
+    file_path = f"{path}/{filename}"
+    return file_path
+
+
+def get_filename_and_type_from_path(path: str, filename: str) -> Tuple[str, str]:
+    """Find a file name prefix in a folder."""
+    file_type = "None"
 
     if filename in path:
         path_without_filename = "/".join(path.split("/")[:-1])
@@ -31,17 +46,14 @@ def get_filename_from_path(
             break
 
     file_path = f"{path}/{filename}"
-    if return_file_type:
-        return file_path, file_type
-    else:
-        return file_path
+    return file_path, file_type
 
 
 def get_vocab_from_path(path: str) -> List[str]:
 
     vocab: List[str]
     filename = "vocab"
-    file_path, filetype = get_filename_from_path(path, filename, return_file_type=True)
+    file_path, filetype = get_filename_and_type_from_path(path, filename)
 
     if filetype == FileTypes.TXT:
         vocab = parse_and_load_txt_vocab(file_path)

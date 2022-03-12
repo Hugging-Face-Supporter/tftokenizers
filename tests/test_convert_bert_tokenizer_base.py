@@ -2,17 +2,18 @@ import numpy as np
 import pytest
 import tensorflow as tf
 import tensorflow_text as text
-from tftokenizers.file import get_filename_from_path, load_json
+from transformers import AutoTokenizer, TFAutoModel
+
+from tftokenizers.file import get_filename_and_type_from_path, load_json
 from tftokenizers.tokenizer import TFTokenizerBase
 from tftokenizers.types import PaddingStrategies
-from transformers import AutoTokenizer, TFAutoModel
 
 MODEL_NAME_OR_PATH = "bert-base-uncased"
 ATTENTION_MASK = "attention_mask"
 INPUT_IDS = "input_ids"
 MAX_LENGTH = 512
 PATH = "saved_tokenizers/bert-base-uncased"
-VOCAB_PATH = get_filename_from_path(PATH, "vocab")
+VOCAB_PATH = get_filename_and_type_from_path(PATH, "vocab")
 
 s1 = "sponge bob squarepants is an avenger"
 s2 = "Svenska ordet smörgåsbord"
@@ -70,10 +71,10 @@ def model():
 def test_custom_tokenizer_one_sentence(tf_tokenizer):
     """Test that different input methods are tokenized the same and are supported."""
 
-    token_id_tf = tf_tokenizer.tokenize(s1)["input_ids"]
-    token_id_copy1_tf = tf_tokenizer.tokenize([s1])["input_ids"]
-    token_id_copy2_tf = tf_tokenizer.tokenize(tf.constant(s1))["input_ids"]
-    token_id_copy3_tf = tf_tokenizer.tokenize(tf.constant([s1]))["input_ids"]
+    token_id_tf = tf_tokenizer.tokenize(s1)[INPUT_IDS]
+    token_id_copy1_tf = tf_tokenizer.tokenize([s1])[INPUT_IDS]
+    token_id_copy2_tf = tf_tokenizer.tokenize(tf.constant(s1))[INPUT_IDS]
+    token_id_copy3_tf = tf_tokenizer.tokenize(tf.constant([s1]))[INPUT_IDS]
 
     np.testing.assert_array_almost_equal(
         x=token_id_tf.numpy(), y=token_id_copy1_tf.numpy()
@@ -96,10 +97,10 @@ def test_compare_huggingface_custom_tokenizer(hf_tokenizer, tf_tokenizer):
         [s1], return_tensors="tf", padding=True, truncation=True
     )
     np.testing.assert_almost_equal(
-        tokens_tf["input_ids"].numpy(), tokens_hf["input_ids"].numpy()
+        tokens_tf[INPUT_IDS].numpy(), tokens_hf[INPUT_IDS].numpy()
     )
     np.testing.assert_almost_equal(
-        tokens_tf["attention_mask"].numpy(), tokens_hf["attention_mask"].numpy()
+        tokens_tf[ATTENTION_MASK].numpy(), tokens_hf[ATTENTION_MASK].numpy()
     )
 
     # 2. Test simple Swedish sentence
@@ -110,10 +111,10 @@ def test_compare_huggingface_custom_tokenizer(hf_tokenizer, tf_tokenizer):
         [s2], return_tensors="tf", padding=True, truncation=True
     )
     np.testing.assert_almost_equal(
-        tokens_tf["input_ids"].numpy(), tokens_hf["input_ids"].numpy()
+        tokens_tf[INPUT_IDS].numpy(), tokens_hf[INPUT_IDS].numpy()
     )
     np.testing.assert_almost_equal(
-        tokens_tf["attention_mask"].numpy(), tokens_hf["attention_mask"].numpy()
+        tokens_tf[ATTENTION_MASK].numpy(), tokens_hf[ATTENTION_MASK].numpy()
     )
 
 

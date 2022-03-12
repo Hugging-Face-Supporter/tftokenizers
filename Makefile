@@ -13,19 +13,27 @@ deps:
 	# pip install -r requirements.txt
 
 testdeps:
-	pip install black coverage flake8 pytest
+	poetry add --dev black coverage flake8 pytest
+	# pip install black coverage flake8 pytest
 
 format:
-	python -m black tftokenizers tests
+	poetry run python -m black tftokenizers tests
+	# python -m black tftokenizers tests
 
-lint:  ## Lint
+lint:
+	poetry run python -m flake8 tftokenizers tests
 	python -m flake8 tftokenizers tests
 
-test:  ## Run tests
-	python -m pytest -ra
+test:
+	poetry run python -m pytest -ra
+	# python -m pytest -ra
+
+tox:
+	poetry run tox
 
 build:
 	make deps
 	make testdeps
 	make format
-	make coverage
+	make tox
+	# make coverage

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tftokenizers"
-version = "0.1.4"
+version = "0.1.5"
 description = "Use Huggingface Transformer and Tokenizers as Tensorflow Reusable SavedModels."
 authors = ["MarkusSagen <markus.john.sagen@gmail.com>"]
 license = "Apache License 2.0"
@@ -12,7 +12,7 @@ keywords = ['huggingface', 'transformers', 'tokenizers', 'tensorflow', 'text']
 python = "^3.8"
 sentencepiece = "^0.1.96"
 tensorflow = "2.5.2"
-tensorflow-hub = "^0.12.0"
+tensorflow-hub = "^0.9.0"
 tensorflow-text = "2.5.0"
 tf-sentencepiece = "^0.1.92"
 transformers = "^4.15.0"
@@ -47,6 +47,8 @@ tox = "3.24.4"
 tomlkit = "0.7.2"
 pylint = "2.9.0"
 autopep8 = "^1.6.0"
+python-lsp-server = "^1.4.0"
+pyright = "^1.1.229"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
