@@ -192,6 +192,7 @@ class TFAutoTokenizer(tf.Module):
         self,
         sequence: tf.RaggedTensor,
     ) -> TF_TOKENIZER_INPUT:
+
         r"""
         Add padding of a sequence and supports different strategies for doing so.
 

@@ -77,4 +77,7 @@ if __name__ == "__main__":
     s1 = "sponge bob squarepants is an avenger"
     s2 = "Huggingface to Tensorflow tokenizers"
     s3 = "HelLo!"
-    output = custom_model([s1, s2, s3])
+    output = custom_model(
+        [s1, s2, s3],
+    )
+    print(output)
