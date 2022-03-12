@@ -1,6 +1,6 @@
 """Use Huggingface Transformer and Tokenizers as Tensorflow Resuable SavedModels."""
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 from .detect import detect_and_load_tokenizer as detect_and_load_tokenizer
 from .detect import find_tf_base_tokenizer as find_tf_base_tokenizer
